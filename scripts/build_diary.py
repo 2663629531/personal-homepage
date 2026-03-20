@@ -23,6 +23,13 @@ class DiaryEntry:
     url: str
 
 
+@dataclass
+class DiaryDocument:
+    entry: DiaryEntry
+    body: str
+    slug: str
+
+
 def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
     if not text.startswith("---\n"):
         return {}, text
@@ -145,8 +152,47 @@ def render_markdown(body: str) -> str:
     return "\n".join(blocks)
 
 
-def render_entry_page(entry: DiaryEntry, body: str) -> str:
+def render_entry_page(
+    entry: DiaryEntry,
+    body: str,
+    previous_entry: DiaryEntry | None = None,
+    next_entry: DiaryEntry | None = None,
+) -> str:
     content = render_markdown(body)
+    previous_href = f"../../{previous_entry.url.removeprefix('./')}" if previous_entry else ""
+    next_href = f"../../{next_entry.url.removeprefix('./')}" if next_entry else ""
+    previous_link = (
+        f"""
+            <a class="entry-pager-card" href="{previous_href}">
+              <span class="entry-pager-label">上一篇</span>
+              <strong>{html.escape(previous_entry.title)}</strong>
+              <time datetime="{previous_entry.date}">{previous_entry.displayDate}</time>
+            </a>
+        """
+        if previous_entry
+        else ""
+    )
+    next_link = (
+        f"""
+            <a class="entry-pager-card" href="{next_href}">
+              <span class="entry-pager-label">下一篇</span>
+              <strong>{html.escape(next_entry.title)}</strong>
+              <time datetime="{next_entry.date}">{next_entry.displayDate}</time>
+            </a>
+        """
+        if next_entry
+        else ""
+    )
+    pager = (
+        f"""
+          <nav class="entry-pager" aria-label="日记翻页">
+{previous_link}
+{next_link}
+          </nav>
+        """
+        if previous_link or next_link
+        else ""
+    )
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
@@ -184,7 +230,8 @@ def render_entry_page(entry: DiaryEntry, body: str) -> str:
 
       <main>
         <div class="entry-shell">
-          <div class="entry-back">
+          <div class="entry-actions">
+            <a href="../../index.html#home">返回首页</a>
             <a href="../../index.html#diary">返回日记列表</a>
           </div>
           <article class="entry-article reveal is-visible">
@@ -198,6 +245,7 @@ def render_entry_page(entry: DiaryEntry, body: str) -> str:
 {content}
             </div>
           </article>
+{pager}
         </div>
       </main>
 
@@ -218,7 +266,7 @@ def render_entry_page(entry: DiaryEntry, body: str) -> str:
 """
 
 
-def build_entry(path: Path) -> DiaryEntry | None:
+def build_entry(path: Path) -> DiaryDocument | None:
     text = path.read_text(encoding="utf-8").strip()
     frontmatter, body = parse_frontmatter(text)
 
@@ -233,42 +281,45 @@ def build_entry(path: Path) -> DiaryEntry | None:
     display_date = date.replace("-", ".")
     url = f"./diary/posts/{path.stem}.html"
 
-    POSTS_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = POSTS_DIR / f"{path.stem}.html"
-    output_path.write_text(
-        render_entry_page(
-            DiaryEntry(
-                date=date,
-                displayDate=display_date,
-                tag=tag,
-                title=title,
-                summary=summary,
-                url=url,
-            ),
-            body,
+    return DiaryDocument(
+        entry=DiaryEntry(
+            date=date,
+            displayDate=display_date,
+            tag=tag,
+            title=title,
+            summary=summary,
+            url=url,
         ),
-        encoding="utf-8",
-    )
-
-    return DiaryEntry(
-        date=date,
-        displayDate=display_date,
-        tag=tag,
-        title=title,
-        summary=summary,
-        url=url,
+        body=body,
+        slug=path.stem,
     )
 
 
 def main() -> None:
-    entries: list[DiaryEntry] = []
+    documents: list[DiaryDocument] = []
 
     for path in sorted(ENTRIES_DIR.glob("*.md"), reverse=True):
-        entry = build_entry(path)
-        if entry:
-            entries.append(entry)
+        document = build_entry(path)
+        if document:
+            documents.append(document)
 
-    payload = [entry.__dict__ for entry in entries]
+    POSTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    for index, document in enumerate(documents):
+        previous_entry = documents[index - 1].entry if index > 0 else None
+        next_entry = documents[index + 1].entry if index + 1 < len(documents) else None
+        output_path = POSTS_DIR / f"{document.slug}.html"
+        output_path.write_text(
+            render_entry_page(
+                document.entry,
+                document.body,
+                previous_entry=previous_entry,
+                next_entry=next_entry,
+            ),
+            encoding="utf-8",
+        )
+
+    payload = [document.entry.__dict__ for document in documents]
     OUTPUT_FILE.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

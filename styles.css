@@ -237,7 +237,13 @@ main {
   gap: 16px;
 }
 
+.diary-list {
+  display: grid;
+  gap: 16px;
+}
+
 .timeline-item,
+.diary-card,
 .skill-card,
 .tool-row {
   border: 1px solid var(--line);
@@ -246,6 +252,10 @@ main {
 }
 
 .timeline-item {
+  padding: 22px 24px;
+}
+
+.diary-card {
   padding: 22px 24px;
 }
 
@@ -258,11 +268,31 @@ main {
 }
 
 .timeline-head h3,
+.diary-card h3,
 .skill-card h3 {
   margin: 0;
   font-size: 1rem;
   line-height: 1.5;
   font-weight: 500;
+}
+
+.diary-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  color: var(--text-soft);
+  font-size: 0.88rem;
+}
+
+.diary-head time {
+  letter-spacing: 0.04em;
+}
+
+.diary-card p {
+  margin-top: 10px;
+  color: var(--text-soft);
 }
 
 .timeline-head span,

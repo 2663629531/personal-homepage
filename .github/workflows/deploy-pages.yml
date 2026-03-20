@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html styles.css script.js avatar.jpg _site/
+          cp -R diary _site/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

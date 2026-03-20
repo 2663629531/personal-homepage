@@ -259,6 +259,12 @@ main {
   padding: 22px 24px;
 }
 
+.diary-card-placeholder,
+.diary-empty {
+  border-style: dashed;
+  color: var(--text-soft);
+}
+
 .timeline-head {
   display: flex;
   align-items: flex-start;

@@ -151,36 +151,14 @@
               <p>
                 以后这里会持续更新成一份公开的工作日志: 不只是“今天做了什么”，更是“今天我怎么理解人与 Agent 的协作又往前走了一步”。
               </p>
-              <div class="diary-list">
-                <article class="diary-card">
+              <div class="diary-list" id="diary-list">
+                <article class="diary-card diary-card-placeholder">
                   <div class="diary-head">
-                    <time datetime="2026-03-21">2026.03.21</time>
-                    <span>OpenClaw / Daily Note</span>
+                    <time datetime="">Loading</time>
+                    <span>Diary Feed</span>
                   </div>
-                  <h3>把使用痕迹变成可复盘的工作日记</h3>
-                  <p>
-                    今天开始决定把每天和 OpenClaw 的真实协作过程整理成公开日记。重点不是记录任务清单，而是沉淀每天的判断、问题和工作方式变化。
-                  </p>
-                </article>
-                <article class="diary-card">
-                  <div class="diary-head">
-                    <time datetime="2026-03-20">2026.03.20</time>
-                    <span>Agent / Workflow</span>
-                  </div>
-                  <h3>一个岗位是否可以拆成多个 Agent</h3>
-                  <p>
-                    持续思考“一个岗位等于一组 Agent”的可能性。真正有价值的部分，不是替代整个人，而是先拆出那些高频、重复、规则明确的小工作流。
-                  </p>
-                </article>
-                <article class="diary-card">
-                  <div class="diary-head">
-                    <time datetime="2026-03-19">2026.03.19</time>
-                    <span>System / Reflection</span>
-                  </div>
-                  <h3>从工具使用者转向工作系统设计者</h3>
-                  <p>
-                    最近越来越确认，真正值得记录的不是某个工具本身，而是它如何改变我的输入、判断、输出和复盘方式。日记会成为这条线索的长期记录。
-                  </p>
+                  <h3>正在读取日记</h3>
+                  <p>页面会从 `diary/index.json` 自动读取最新日记。</p>
                 </article>
               </div>
             </section>
@@ -249,6 +227,6 @@
       </footer>
     </div>
 
-    <script src="./script.js"></script>
+    <script src="./script.js?v=20260321-diary-sync"></script>
   </body>
 </html>

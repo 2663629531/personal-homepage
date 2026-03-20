@@ -42,7 +42,52 @@ const createDiaryCard = (entry) => {
   return link;
 };
 
-const renderDiaryEntries = (diaryList, entries) => {
+const getDiaryMonthKey = (entry) => {
+  const rawDate = entry?.date || "";
+  return rawDate.slice(0, 7).replace("-", ".");
+};
+
+const buildArchiveGroups = (entries) => {
+  const groups = new Map();
+
+  entries.forEach((entry) => {
+    const month = getDiaryMonthKey(entry);
+    if (!month) return;
+    groups.set(month, (groups.get(month) || 0) + 1);
+  });
+
+  return Array.from(groups.entries()).map(([month, count]) => ({ month, count }));
+};
+
+const renderDiaryArchive = (archiveRoot, entries, activeMonth, onSelectMonth) => {
+  if (!archiveRoot) return;
+
+  archiveRoot.innerHTML = "";
+
+  if (!Array.isArray(entries) || entries.length === 0) {
+    return;
+  }
+
+  const buttons = [{ month: "all", count: entries.length, label: "全部" }, ...buildArchiveGroups(entries)];
+
+  buttons.forEach((item) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "diary-archive-button";
+    button.dataset.month = item.month;
+    button.textContent =
+      item.month === "all" ? `${item.label} · ${item.count}` : `${item.month} · ${item.count}`;
+
+    if (item.month === activeMonth) {
+      button.classList.add("is-active");
+    }
+
+    button.addEventListener("click", () => onSelectMonth(item.month));
+    archiveRoot.append(button);
+  });
+};
+
+const renderDiaryEntries = (diaryList, entries, activeMonth = "all") => {
   if (!diaryList) return;
 
   diaryList.innerHTML = "";
@@ -63,20 +108,55 @@ const renderDiaryEntries = (diaryList, entries) => {
     return;
   }
 
-  entries.forEach((entry) => {
+  const filteredEntries =
+    activeMonth === "all"
+      ? entries
+      : entries.filter((entry) => getDiaryMonthKey(entry) === activeMonth);
+
+  if (filteredEntries.length === 0) {
+    const empty = document.createElement("article");
+    empty.className = "diary-card diary-empty";
+
+    const title = document.createElement("h3");
+    title.textContent = `${activeMonth} 暂时还没有公开日记`;
+
+    const text = document.createElement("p");
+    text.textContent = "切回“全部”或继续写下去，这里会慢慢长出你的归档。";
+
+    empty.append(title, text);
+    diaryList.append(empty);
+    return;
+  }
+
+  filteredEntries.forEach((entry) => {
     diaryList.append(createDiaryCard(entry));
   });
 };
 
-const loadDiaryFeed = async (diaryList) => {
+const loadDiaryFeed = async (diaryList, archiveRoot) => {
   if (!diaryList) return;
 
   try {
     const response = await fetch("./diary/index.json");
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const entries = await response.json();
-    renderDiaryEntries(diaryList, entries);
+
+    const state = {
+      entries,
+      activeMonth: "all",
+    };
+
+    const rerender = () => {
+      renderDiaryArchive(archiveRoot, state.entries, state.activeMonth, (month) => {
+        state.activeMonth = month;
+        rerender();
+      });
+      renderDiaryEntries(diaryList, state.entries, state.activeMonth);
+    };
+
+    rerender();
   } catch (error) {
+    renderDiaryArchive(archiveRoot, [], "all", () => {});
     renderDiaryEntries(diaryList, []);
   }
 };
@@ -106,6 +186,7 @@ const initReadingProgress = () => {
 const initPage = () => {
   const themeToggle = document.querySelector(".theme-toggle");
   const diaryList = document.querySelector("#diary-list");
+  const diaryArchive = document.querySelector("#diary-archive");
 
   themeToggle?.addEventListener("click", () => {
     const nextTheme =
@@ -128,7 +209,7 @@ const initPage = () => {
 
   document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
 
-  loadDiaryFeed(diaryList);
+  loadDiaryFeed(diaryList, diaryArchive);
   initReadingProgress();
 };
 

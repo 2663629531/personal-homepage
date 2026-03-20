@@ -283,7 +283,7 @@ def render_entry_page(
       </footer>
     </div>
 
-    <script src="../../script.js?v=20260321-reading-extras"></script>
+    <script src="../../script.js?v=20260321-diary-archive"></script>
   </body>
 </html>
 """

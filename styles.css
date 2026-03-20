@@ -242,6 +242,43 @@ main {
   gap: 16px;
 }
 
+.diary-archive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin: 22px 0 18px;
+}
+
+.diary-archive-loading {
+  color: var(--text-soft);
+  font-size: 0.92rem;
+}
+
+.diary-archive-button {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text-soft);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    transform var(--transition),
+    background-color 500ms ease;
+}
+
+.diary-archive-button:hover,
+.diary-archive-button.is-active {
+  color: var(--text);
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
+}
+
+.diary-archive-button.is-active {
+  background: var(--bg-elevated);
+}
+
 .diary-card-link {
   display: block;
   color: inherit;
@@ -703,6 +740,10 @@ main {
   .nav-links {
     flex-wrap: wrap;
     gap: 14px 18px;
+  }
+
+  .diary-archive {
+    gap: 10px;
   }
 
   .timeline-head,

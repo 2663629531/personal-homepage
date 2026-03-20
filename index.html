@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>关于我 | Personal Universe</title>
+    <title>关于我 | 副驾驶手记</title>
     <meta
       name="description"
-      content="一个极简的个人主页，展示个人介绍、经历以及 skill 项目。"
+      content="副驾驶手记：记录交易、Agent、工作系统与真实项目的个人主页。"
     />
     <link
       rel="icon"
@@ -18,11 +18,11 @@
     <div class="site-shell">
       <header class="topbar">
         <div class="topbar-inner">
-          <a class="brand" href="#home">Personal Universe</a>
+          <a class="brand" href="#home">副驾驶手记</a>
           <nav class="nav" aria-label="主导航">
             <div class="nav-links">
               <a href="#writing">博客</a>
-              <a href="#skills">Skills</a>
+              <a href="#skills">项目</a>
               <a href="#about">关于我</a>
             </div>
             <div class="nav-actions">
@@ -46,7 +46,7 @@
             <img class="avatar" src="./avatar.jpg" alt="头像" />
             <h1>Xudafu</h1>
             <ul class="meta-list">
-              <li>Shanghai, China</li>
+              <li>Ningbo, China</li>
               <li>Trading / AI / Agent</li>
               <li><a href="#skills">Projects / Systems / Notes</a></li>
             </ul>
@@ -109,48 +109,34 @@
             </section>
 
             <section class="content-section reveal" id="skills">
-              <h2>Skill 项目</h2>
+              <h2>代表项目</h2>
               <div class="skill-grid">
                 <article class="skill-card">
+                  <div class="skill-tag">Agent</div>
+                  <h3>CommentLeadFinder</h3>
+                  <p>
+                    一个装进 OpenClaw Agent 的获客 Skill。输入小红书或抖音链接，自动抓取评论并筛出真正值得跟进的潜在客户。
+                  </p>
+                </article>
+                <article class="skill-card">
+                  <div class="skill-tag">Research Desk</div>
+                  <h3>Polymarket 定价错误扫描器</h3>
+                  <p>
+                    半自动研究桌面工具，用来扫描单市场错误定价机会，支持 AI 概率引擎、影子跟单与 Markdown 报告输出。
+                  </p>
+                </article>
+                <article class="skill-card">
+                  <div class="skill-tag">Monitoring</div>
+                  <h3>cross_market_monitor</h3>
+                  <p>
+                    一个本地运行的 Stake x Polymarket 错价监控器 MVP，包含信号确认、SQLite 持久化、FastAPI 接口和 Dashboard。
+                  </p>
+                </article>
+                <article class="skill-card">
                   <div class="skill-tag">Trading</div>
-                  <h3>Meme Rush</h3>
+                  <h3>BSC Memecoin 扫盘 + 打狗 Bot</h3>
                   <p>
-                    聚合新发 meme token 和热点叙事，覆盖 launchpad 动态、阶段变化和话题热度，适合快速观察市场情绪。
-                  </p>
-                </article>
-                <article class="skill-card">
-                  <div class="skill-tag">Security</div>
-                  <h3>Token Audit</h3>
-                  <p>
-                    在交易前检查合约和交易风险，辅助识别 honeypot、恶意权限和潜在骗局，降低盲目操作的概率。
-                  </p>
-                </article>
-                <article class="skill-card">
-                  <div class="skill-tag">Portfolio</div>
-                  <h3>Address Info</h3>
-                  <p>
-                    查询链上地址的持仓、余额、价格和变化，用统一视图快速还原一个钱包当前的资产结构。
-                  </p>
-                </article>
-                <article class="skill-card">
-                  <div class="skill-tag">Signals</div>
-                  <h3>Trading Signal</h3>
-                  <p>
-                    跟踪 Smart Money 买卖行为、触发价格和收益变化，为机会筛选提供可读性更高的信号层。
-                  </p>
-                </article>
-                <article class="skill-card">
-                  <div class="skill-tag">Exchange</div>
-                  <h3>Spot</h3>
-                  <p>
-                    基于 Binance Spot API 执行现货相关请求，让交易执行链路可以与其他自动化模块自然衔接。
-                  </p>
-                </article>
-                <article class="skill-card">
-                  <div class="skill-tag">Content</div>
-                  <h3>Square Post</h3>
-                  <p>
-                    将观点和结论快速整理为可发布内容，直接连接研究、表达与分发，而不是停在分析阶段。
+                    面向 BSC memecoin 的半自动 CLI 工具，聚合新闻和新池信号，先做 paper trading，再生成组合与扫描报告。
                   </p>
                 </article>
               </div>
@@ -196,8 +182,8 @@
       <footer class="footer">
         <div class="footer-inner">
           <div class="footer-brand">
-            <h2>Personal Universe</h2>
-            <p>© 2026 Personal Universe · All rights reserved</p>
+            <h2>副驾驶手记</h2>
+            <p>© 2026 副驾驶手记 · All rights reserved</p>
             <div class="status-pill">All Systems Normal</div>
           </div>
           <div class="footer-links">
@@ -206,7 +192,7 @@
               <a href="#home">首页</a>
               <a href="#about">关于我</a>
               <a href="#writing">博客</a>
-              <a href="#skills">Skills</a>
+              <a href="#skills">项目</a>
             </div>
             <div>
               <h3>方向</h3>

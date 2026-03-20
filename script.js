@@ -33,7 +33,11 @@ const createDiaryCard = (entry) => {
   const summary = document.createElement("p");
   summary.textContent = entry.summary || "";
 
-  article.append(head, title, summary);
+  const more = document.createElement("span");
+  more.className = "diary-readmore";
+  more.textContent = "阅读全文";
+
+  article.append(head, title, summary, more);
   link.append(article);
   return link;
 };
@@ -77,6 +81,28 @@ const loadDiaryFeed = async (diaryList) => {
   }
 };
 
+const initReadingProgress = () => {
+  const progressBar = document.querySelector("[data-reading-progress]");
+  const article = document.querySelector(".entry-article");
+
+  if (!progressBar || !article) return;
+
+  const updateProgress = () => {
+    const articleTop = article.offsetTop;
+    const articleHeight = article.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    const scrollTop = window.scrollY;
+    const maxScrollable = Math.max(articleHeight - viewportHeight, 1);
+    const rawProgress = ((scrollTop - articleTop) / maxScrollable) * 100;
+    const progress = Math.min(100, Math.max(0, rawProgress));
+    progressBar.style.transform = `scaleX(${progress / 100})`;
+  };
+
+  updateProgress();
+  window.addEventListener("scroll", updateProgress, { passive: true });
+  window.addEventListener("resize", updateProgress);
+};
+
 const initPage = () => {
   const themeToggle = document.querySelector(".theme-toggle");
   const diaryList = document.querySelector("#diary-list");
@@ -103,6 +129,7 @@ const initPage = () => {
   document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
 
   loadDiaryFeed(diaryList);
+  initReadingProgress();
 };
 
 if (document.readyState === "loading") {

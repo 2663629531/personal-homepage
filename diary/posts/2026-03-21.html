@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="../../styles.css" />
   </head>
   <body>
+    <div class="reading-progress" aria-hidden="true">
+      <div class="reading-progress-bar" data-reading-progress></div>
+    </div>
     <div class="site-shell">
       <header class="topbar">
         <div class="topbar-inner">
@@ -84,6 +87,12 @@
         
           </nav>
         
+
+          <section class="entry-latest" aria-label="最新日记">
+            <span class="entry-latest-label">最新一篇</span>
+            <p>你正在读的这篇，就是目前最新更新。</p>
+          </section>
+            
         </div>
       </main>
 
@@ -98,6 +107,6 @@
       </footer>
     </div>
 
-    <script src="../../script.js?v=20260321-diary-sync"></script>
+    <script src="../../script.js?v=20260321-reading-extras"></script>
   </body>
 </html>

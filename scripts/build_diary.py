@@ -157,10 +157,12 @@ def render_entry_page(
     body: str,
     previous_entry: DiaryEntry | None = None,
     next_entry: DiaryEntry | None = None,
+    latest_entry: DiaryEntry | None = None,
 ) -> str:
     content = render_markdown(body)
     previous_href = f"../../{previous_entry.url.removeprefix('./')}" if previous_entry else ""
     next_href = f"../../{next_entry.url.removeprefix('./')}" if next_entry else ""
+    latest_href = f"../../{latest_entry.url.removeprefix('./')}" if latest_entry else ""
     previous_link = (
         f"""
             <a class="entry-pager-card" href="{previous_href}">
@@ -193,6 +195,23 @@ def render_entry_page(
         if previous_link or next_link
         else ""
     )
+    latest_panel = ""
+    if latest_entry:
+        if latest_entry.url == entry.url:
+            latest_panel = """
+          <section class="entry-latest" aria-label="最新日记">
+            <span class="entry-latest-label">最新一篇</span>
+            <p>你正在读的这篇，就是目前最新更新。</p>
+          </section>
+            """
+        else:
+            latest_panel = f"""
+          <section class="entry-latest" aria-label="最新日记">
+            <span class="entry-latest-label">最新一篇</span>
+            <a href="{latest_href}">{html.escape(latest_entry.title)}</a>
+            <p>{html.escape(latest_entry.summary)}</p>
+          </section>
+            """
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
@@ -207,6 +226,9 @@ def render_entry_page(
     <link rel="stylesheet" href="../../styles.css" />
   </head>
   <body>
+    <div class="reading-progress" aria-hidden="true">
+      <div class="reading-progress-bar" data-reading-progress></div>
+    </div>
     <div class="site-shell">
       <header class="topbar">
         <div class="topbar-inner">
@@ -246,6 +268,7 @@ def render_entry_page(
             </div>
           </article>
 {pager}
+{latest_panel}
         </div>
       </main>
 
@@ -260,7 +283,7 @@ def render_entry_page(
       </footer>
     </div>
 
-    <script src="../../script.js?v=20260321-diary-sync"></script>
+    <script src="../../script.js?v=20260321-reading-extras"></script>
   </body>
 </html>
 """
@@ -305,6 +328,8 @@ def main() -> None:
 
     POSTS_DIR.mkdir(parents=True, exist_ok=True)
 
+    latest_entry = documents[0].entry if documents else None
+
     for index, document in enumerate(documents):
         previous_entry = documents[index - 1].entry if index > 0 else None
         next_entry = documents[index + 1].entry if index + 1 < len(documents) else None
@@ -315,6 +340,7 @@ def main() -> None:
                 document.body,
                 previous_entry=previous_entry,
                 next_entry=next_entry,
+                latest_entry=latest_entry,
             ),
             encoding="utf-8",
         )

@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="../../styles.css" />
   </head>
   <body>
+    <div class="reading-progress" aria-hidden="true">
+      <div class="reading-progress-bar" data-reading-progress></div>
+    </div>
     <div class="site-shell">
       <header class="topbar">
         <div class="topbar-inner">
@@ -68,6 +71,13 @@
         
           </nav>
         
+
+          <section class="entry-latest" aria-label="最新日记">
+            <span class="entry-latest-label">最新一篇</span>
+            <a href="../../diary/posts/2026-03-21.html">凌晨3点，小红书封了我的IP</a>
+            <p>测试评论区潜客挖掘工具时，连续请求触发了小红书风控。从被封到恢复，前后10分钟。记录一下排查思路。</p>
+          </section>
+            
         </div>
       </main>
 
@@ -82,6 +92,6 @@
       </footer>
     </div>
 
-    <script src="../../script.js?v=20260321-diary-sync"></script>
+    <script src="../../script.js?v=20260321-reading-extras"></script>
   </body>
 </html>

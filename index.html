@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>关于我 | Personal Universe</title>
+    <meta
+      name="description"
+      content="一个极简的个人主页，展示个人介绍、经历以及 skill 项目。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111115'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='34' fill='white' font-family='Arial'%3EX%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="#home">Personal Universe</a>
+          <nav class="nav" aria-label="主导航">
+            <div class="nav-links">
+              <a href="#writing">博客</a>
+              <a href="#skills">Skills</a>
+              <a href="#about">关于我</a>
+            </div>
+            <div class="nav-actions">
+              <div class="locale-switch" aria-label="语言切换">
+                <a href="#home">EN</a>
+                <span>/</span>
+                <a class="is-active" href="#home">ZH</a>
+              </div>
+              <button class="theme-toggle" type="button" aria-label="切换主题">
+                <span class="theme-toggle-icon" aria-hidden="true"></span>
+                <span class="theme-toggle-text">Toggle theme</span>
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main id="home">
+        <div class="page-grid">
+          <aside class="profile-column reveal">
+            <div class="avatar">X</div>
+            <h1>Xudafu</h1>
+            <ul class="meta-list">
+              <li>Shanghai, China</li>
+              <li>xudafu@local.dev</li>
+              <li><a href="#skills">Skill Builder</a></li>
+            </ul>
+            <p class="motto">把能力做成可复用的产品，而不是一次性的成果。</p>
+          </aside>
+
+          <div class="content-column">
+            <section class="content-section reveal" id="about">
+              <h2>你好，我是 Xudafu</h2>
+              <p>
+                2021 年毕业后，我进入 XX未来制造，在一家 3D 打印公司工作了两年。那段经历让我第一次真正进入现实世界的生产与协作体系，也让我开始思考，技术除了能做出来，还能怎样更深地改变人的工作方式。
+              </p>
+              <p>
+                2022 年，因为在加密货币市场中获得了一些结果，我选择离职，开始全职交易。那几年里，我一边交易，一边接触并学习各种真正让我感兴趣的事情。从市场、工具到自动化，我逐渐意识到，自己最在意的并不只是结果本身，而是如何建立一套更高效的认知和执行系统。
+              </p>
+              <p>
+                到了 2026 年，接触 OpenClaw 之后，我对一件事越来越确信：AI 不再只是一个遥远的概念，它正在非常具体地进入我们的日常生活。未来的工作方式，很可能不再只是人使用工具，而会变成“人和 Agent 一起工作”；甚至有一天，一个岗位本身，就是一组 Agent 的组合。
+              </p>
+              <p>
+                这让我更加确定，自己想长期投入这个方向。我想一边做，一边学，一边记录，把自己的观察、思考和实践持续分享出来。这个网站，就是这件事的开始。
+              </p>
+            </section>
+
+            <section class="content-section reveal" id="experience">
+              <h2>经历与转向</h2>
+              <div class="timeline">
+                <article class="timeline-item">
+                  <div class="timeline-head">
+                    <h3>制造业中的起点</h3>
+                    <span>2021 - 2023</span>
+                  </div>
+                  <p class="timeline-meta">XX未来制造 / 3D 打印行业</p>
+                  <p>
+                    在真实业务环境中工作，建立了对产品、协作和技术落地的第一层理解，也让我开始思考技术进入现实生活的方式。
+                  </p>
+                </article>
+                <article class="timeline-item">
+                  <div class="timeline-head">
+                    <h3>全职交易与自主探索</h3>
+                    <span>2022 - 2025</span>
+                  </div>
+                  <p class="timeline-meta">Crypto Trading / Self-Directed Learning</p>
+                  <p>
+                    因加密市场获得阶段性收益后选择离职，开始以更自由的方式研究交易、工具、自动化流程和高效率工作流。
+                  </p>
+                </article>
+                <article class="timeline-item">
+                  <div class="timeline-head">
+                    <h3>AI 与 Agent 的长期投入</h3>
+                    <span>2026 - 至今</span>
+                  </div>
+                  <p class="timeline-meta">OpenClaw / AI Native / Writing</p>
+                  <p>
+                    接触 OpenClaw 后，开始明确把 AI 与 Agent 视为未来长期投入的方向，并通过项目和写作记录自己的判断与实践。
+                  </p>
+                </article>
+              </div>
+            </section>
+
+            <section class="content-section reveal" id="skills">
+              <h2>Skill 项目</h2>
+              <div class="skill-grid">
+                <article class="skill-card">
+                  <div class="skill-tag">Trading</div>
+                  <h3>Meme Rush</h3>
+                  <p>
+                    聚合新发 meme token 和热点叙事，覆盖 launchpad 动态、阶段变化和话题热度，适合快速观察市场情绪。
+                  </p>
+                </article>
+                <article class="skill-card">
+                  <div class="skill-tag">Security</div>
+                  <h3>Token Audit</h3>
+                  <p>
+                    在交易前检查合约和交易风险，辅助识别 honeypot、恶意权限和潜在骗局，降低盲目操作的概率。
+                  </p>
+                </article>
+                <article class="skill-card">
+                  <div class="skill-tag">Portfolio</div>
+                  <h3>Address Info</h3>
+                  <p>
+                    查询链上地址的持仓、余额、价格和变化，用统一视图快速还原一个钱包当前的资产结构。
+                  </p>
+                </article>
+                <article class="skill-card">
+                  <div class="skill-tag">Signals</div>
+                  <h3>Trading Signal</h3>
+                  <p>
+                    跟踪 Smart Money 买卖行为、触发价格和收益变化，为机会筛选提供可读性更高的信号层。
+                  </p>
+                </article>
+                <article class="skill-card">
+                  <div class="skill-tag">Exchange</div>
+                  <h3>Spot</h3>
+                  <p>
+                    基于 Binance Spot API 执行现货相关请求，让交易执行链路可以与其他自动化模块自然衔接。
+                  </p>
+                </article>
+                <article class="skill-card">
+                  <div class="skill-tag">Content</div>
+                  <h3>Square Post</h3>
+                  <p>
+                    将观点和结论快速整理为可发布内容，直接连接研究、表达与分发，而不是停在分析阶段。
+                  </p>
+                </article>
+              </div>
+            </section>
+
+            <section class="content-section reveal" id="toolkit">
+              <h2>装备与工具</h2>
+              <div class="tool-list">
+                <div class="tool-row">
+                  <span>编辑器</span>
+                  <strong>Codex + VS Code</strong>
+                </div>
+                <div class="tool-row">
+                  <span>终端</span>
+                  <strong>zsh / Git / Local Skills</strong>
+                </div>
+                <div class="tool-row">
+                  <span>工作方式</span>
+                  <strong>Small Diffs, Fast Checks, Direct Shipping</strong>
+                </div>
+              </div>
+            </section>
+
+            <section class="content-section reveal" id="writing">
+              <h2>我现在关注的事</h2>
+              <p>
+                Agent 如何成为人的长期协作对象，而不只是一次性的工具。
+              </p>
+              <p>
+                一个岗位是否可以被拆解为多个 Agent 协同完成，以及这种协作方式会怎样改变未来的工作结构。
+              </p>
+              <p>
+                AI 进入真实生活之后，个人工作方式、表达方式和产品形态会发生什么变化。
+              </p>
+              <p>
+                我会继续用项目和文字，把这些判断一点点落成更具体的实践。
+              </p>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <h2>Personal Universe</h2>
+            <p>© 2026 Personal Universe · All rights reserved</p>
+            <div class="status-pill">All Systems Normal</div>
+          </div>
+          <div class="footer-links">
+            <div>
+              <h3>站内链接</h3>
+              <a href="#home">首页</a>
+              <a href="#about">关于我</a>
+              <a href="#writing">博客</a>
+              <a href="#skills">Skills</a>
+            </div>
+            <div>
+              <h3>联系</h3>
+              <a href="#skills">PROJECTS</a>
+              <a href="#writing">WRITING</a>
+              <a href="mailto:xudafu@local.dev">EMAIL</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

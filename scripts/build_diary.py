@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import html
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -8,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 ENTRIES_DIR = ROOT / "diary" / "entries"
 OUTPUT_FILE = ROOT / "diary" / "index.json"
+POSTS_DIR = ROOT / "diary" / "posts"
 
 
 @dataclass
@@ -17,6 +20,7 @@ class DiaryEntry:
     tag: str
     title: str
     summary: str
+    url: str
 
 
 def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
@@ -48,6 +52,172 @@ def first_paragraph(body: str) -> str:
     return ""
 
 
+def render_inline(text: str) -> str:
+    escaped = html.escape(text)
+    escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
+    escaped = re.sub(r"`(.+?)`", r"<code>\1</code>", escaped)
+    escaped = re.sub(
+        r"\[(.+?)\]\((https?://.+?)\)",
+        r'<a href="\2" target="_blank" rel="noreferrer">\1</a>',
+        escaped,
+    )
+    return escaped
+
+
+def render_markdown(body: str) -> str:
+    lines = body.splitlines()
+    blocks: list[str] = []
+    paragraph: list[str] = []
+    list_items: list[str] = []
+    list_tag: str | None = None
+
+    def flush_paragraph() -> None:
+        nonlocal paragraph
+        if paragraph:
+            text = " ".join(part.strip() for part in paragraph if part.strip())
+            blocks.append(f"<p>{render_inline(text)}</p>")
+            paragraph = []
+
+    def flush_list() -> None:
+        nonlocal list_items, list_tag
+        if list_items and list_tag:
+            items = "".join(f"<li>{render_inline(item)}</li>" for item in list_items)
+            blocks.append(f"<{list_tag}>{items}</{list_tag}>")
+        list_items = []
+        list_tag = None
+
+    for raw_line in lines:
+        line = raw_line.strip()
+
+        if not line:
+            flush_paragraph()
+            flush_list()
+            continue
+
+        if line == "---":
+            flush_paragraph()
+            flush_list()
+            blocks.append("<hr>")
+            continue
+
+        if line.startswith("### "):
+            flush_paragraph()
+            flush_list()
+            blocks.append(f"<h3>{render_inline(line[4:])}</h3>")
+            continue
+
+        if line.startswith("## "):
+            flush_paragraph()
+            flush_list()
+            blocks.append(f"<h2>{render_inline(line[3:])}</h2>")
+            continue
+
+        if line.startswith("# "):
+            flush_paragraph()
+            flush_list()
+            blocks.append(f"<h1>{render_inline(line[2:])}</h1>")
+            continue
+
+        ordered_match = re.match(r"^\d+\.\s+(.+)$", line)
+        unordered_match = re.match(r"^[-*]\s+(.+)$", line)
+
+        if ordered_match:
+            flush_paragraph()
+            if list_tag not in {None, "ol"}:
+                flush_list()
+            list_tag = "ol"
+            list_items.append(ordered_match.group(1))
+            continue
+
+        if unordered_match:
+            flush_paragraph()
+            if list_tag not in {None, "ul"}:
+                flush_list()
+            list_tag = "ul"
+            list_items.append(unordered_match.group(1))
+            continue
+
+        flush_list()
+        paragraph.append(line)
+
+    flush_paragraph()
+    flush_list()
+    return "\n".join(blocks)
+
+
+def render_entry_page(entry: DiaryEntry, body: str) -> str:
+    content = render_markdown(body)
+    return f"""<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{html.escape(entry.title)} | 副驾驶手记</title>
+    <meta name="description" content="{html.escape(entry.summary)}" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111115'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='34' fill='white' font-family='Arial'%3EX%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="../../styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="../../index.html#home">副驾驶手记</a>
+          <nav class="nav" aria-label="主导航">
+            <div class="nav-links">
+              <a href="../../index.html#writing">博客</a>
+              <a href="../../index.html#diary">日记</a>
+              <a href="../../index.html#skills">项目</a>
+              <a href="../../index.html#about">关于我</a>
+            </div>
+            <div class="nav-actions">
+              <button class="theme-toggle" type="button" aria-label="切换主题">
+                <span class="theme-toggle-icon" aria-hidden="true"></span>
+                <span class="theme-toggle-text">Toggle theme</span>
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <div class="entry-shell">
+          <div class="entry-back">
+            <a href="../../index.html#diary">返回日记列表</a>
+          </div>
+          <article class="entry-article reveal is-visible">
+            <div class="entry-meta">
+              <time datetime="{entry.date}">{entry.displayDate}</time>
+              <span>{html.escape(entry.tag)}</span>
+            </div>
+            <h1>{html.escape(entry.title)}</h1>
+            <p class="entry-summary">{html.escape(entry.summary)}</p>
+            <div class="entry-content">
+{content}
+            </div>
+          </article>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <h2>副驾驶手记</h2>
+            <p>© 2026 副驾驶手记 · All rights reserved</p>
+            <div class="status-pill">All Systems Normal</div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="../../script.js?v=20260321-diary-sync"></script>
+  </body>
+</html>
+"""
+
+
 def build_entry(path: Path) -> DiaryEntry | None:
     text = path.read_text(encoding="utf-8").strip()
     frontmatter, body = parse_frontmatter(text)
@@ -61,12 +231,32 @@ def build_entry(path: Path) -> DiaryEntry | None:
         return None
 
     display_date = date.replace("-", ".")
+    url = f"./diary/posts/{path.stem}.html"
+
+    POSTS_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = POSTS_DIR / f"{path.stem}.html"
+    output_path.write_text(
+        render_entry_page(
+            DiaryEntry(
+                date=date,
+                displayDate=display_date,
+                tag=tag,
+                title=title,
+                summary=summary,
+                url=url,
+            ),
+            body,
+        ),
+        encoding="utf-8",
+    )
+
     return DiaryEntry(
         date=date,
         displayDate=display_date,
         tag=tag,
         title=title,
         summary=summary,
+        url=url,
     )
 
 

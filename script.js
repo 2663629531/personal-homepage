@@ -8,6 +8,10 @@ const applyTheme = (theme) => {
 applyTheme(storedTheme || (preferredDark ? "dark" : "light"));
 
 const createDiaryCard = (entry) => {
+  const link = document.createElement("a");
+  link.className = "diary-card-link";
+  link.href = entry.url || "#";
+
   const article = document.createElement("article");
   article.className = "diary-card";
 
@@ -30,7 +34,8 @@ const createDiaryCard = (entry) => {
   summary.textContent = entry.summary || "";
 
   article.append(head, title, summary);
-  return article;
+  link.append(article);
+  return link;
 };
 
 const renderDiaryEntries = (diaryList, entries) => {

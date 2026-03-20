@@ -242,6 +242,16 @@ main {
   gap: 16px;
 }
 
+.diary-card-link {
+  display: block;
+  color: inherit;
+}
+
+.diary-card-link:hover .diary-card {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
 .timeline-item,
 .diary-card,
 .skill-card,
@@ -257,6 +267,10 @@ main {
 
 .diary-card {
   padding: 22px 24px;
+  transition:
+    transform var(--transition),
+    border-color var(--transition),
+    background-color 500ms ease;
 }
 
 .diary-card-placeholder,
@@ -299,6 +313,90 @@ main {
 .diary-card p {
   margin-top: 10px;
   color: var(--text-soft);
+}
+
+.entry-shell {
+  width: min(100%, 816px);
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+
+.entry-back {
+  margin-bottom: 24px;
+  color: var(--text-soft);
+}
+
+.entry-back a:hover {
+  color: var(--text);
+}
+
+.entry-article {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  padding: 32px;
+}
+
+.entry-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.entry-article h1 {
+  margin: 0 0 16px;
+  font-size: 2rem;
+  line-height: 1.2;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+.entry-summary {
+  margin: 0 0 28px;
+  color: var(--text-soft);
+  font-size: 1.02rem;
+}
+
+.entry-content p,
+.entry-content ul,
+.entry-content ol,
+.entry-content h2,
+.entry-content h3,
+.entry-content hr {
+  margin: 0 0 18px;
+}
+
+.entry-content p,
+.entry-content li {
+  max-width: none;
+  color: var(--text);
+  line-height: 1.8;
+}
+
+.entry-content ul,
+.entry-content ol {
+  padding-left: 20px;
+}
+
+.entry-content hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.entry-content a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.entry-content code {
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
 }
 
 .timeline-head span,
@@ -467,6 +565,10 @@ main {
     flex-direction: column;
     gap: 28px;
   }
+
+  .entry-shell {
+    padding-top: 48px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -484,6 +586,14 @@ main {
 
   .timeline-head,
   .tool-row {
+    flex-direction: column;
+  }
+
+  .entry-article {
+    padding: 22px 18px;
+  }
+
+  .entry-meta {
     flex-direction: column;
   }
 

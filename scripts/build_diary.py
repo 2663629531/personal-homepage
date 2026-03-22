@@ -44,11 +44,17 @@ def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
     _, raw_frontmatter, body = parts
     data: dict[str, str] = {}
 
+    def normalize_value(value: str) -> str:
+        trimmed = value.strip()
+        if len(trimmed) >= 2 and trimmed[0] == trimmed[-1] and trimmed[0] in {"'", '"'}:
+            return trimmed[1:-1].strip()
+        return trimmed
+
     for line in raw_frontmatter.splitlines():
         if ":" not in line:
             continue
         key, value = line.split(":", 1)
-        data[key.strip()] = value.strip()
+        data[key.strip()] = normalize_value(value)
 
     return data, body.strip()
 
@@ -60,6 +66,20 @@ def first_paragraph(body: str) -> str:
             continue
         return " ".join(text.splitlines()).strip()
     return ""
+
+
+def plain_text_excerpt(text: str) -> str:
+    value = text.strip()
+    value = re.sub(r"\[(.+?)\]\((https?://.+?)\)", r"\1", value)
+    value = re.sub(r"^>\s*\[![^\]]+\]\s*", "", value, flags=re.MULTILINE)
+    value = re.sub(r"^>\s*", "", value, flags=re.MULTILINE)
+    value = value.replace(">", " ")
+    value = re.sub(r"^[-*]\s+\[[ xX]\]\s*", "", value, flags=re.MULTILINE)
+    value = re.sub(r"^[-*]\s+", "", value, flags=re.MULTILINE)
+    value = re.sub(r"^\d+\.\s+", "", value, flags=re.MULTILINE)
+    value = re.sub(r"[#*_`=]+", "", value)
+    value = re.sub(r"\s+", " ", value)
+    return value.strip()
 
 
 def relative_site_path(path: Path) -> str | None:
@@ -120,6 +140,8 @@ def resolve_tag(frontmatter: dict[str, str]) -> str:
 def render_inline(text: str) -> str:
     escaped = html.escape(text)
     escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
+    escaped = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"<em>\1</em>", escaped)
+    escaped = re.sub(r"==(.+?)==", r"<mark>\1</mark>", escaped)
     escaped = re.sub(r"`(.+?)`", r"<code>\1</code>", escaped)
     escaped = re.sub(
         r"\[(.+?)\]\((https?://.+?)\)",
@@ -129,11 +151,31 @@ def render_inline(text: str) -> str:
     return escaped
 
 
+def strip_quote_prefix(line: str) -> str:
+    stripped = line.lstrip()
+    if not stripped.startswith(">"):
+        return line
+    stripped = stripped[1:]
+    if stripped.startswith(" "):
+        stripped = stripped[1:]
+    return stripped
+
+
+def callout_class(callout_type: str) -> str:
+    normalized = re.sub(r"[^a-z0-9_-]+", "-", callout_type.lower()).strip("-")
+    return normalized or "note"
+
+
+def default_callout_title(callout_type: str) -> str:
+    normalized = callout_type.replace("-", " ").replace("_", " ").strip()
+    return normalized.title() if normalized else "Note"
+
+
 def render_markdown(body: str) -> str:
     lines = body.splitlines()
     blocks: list[str] = []
     paragraph: list[str] = []
-    list_items: list[str] = []
+    list_items: list[tuple[str, bool | None]] = []
     list_tag: str | None = None
 
     def flush_paragraph() -> None:
@@ -146,44 +188,104 @@ def render_markdown(body: str) -> str:
     def flush_list() -> None:
         nonlocal list_items, list_tag
         if list_items and list_tag:
-            items = "".join(f"<li>{render_inline(item)}</li>" for item in list_items)
+            rendered_items: list[str] = []
+            for item_text, checked in list_items:
+                if checked is None:
+                    rendered_items.append(f"<li>{render_inline(item_text)}</li>")
+                    continue
+
+                checked_attr = " checked" if checked else ""
+                rendered_items.append(
+                    "<li class=\"task-list-item\">"
+                    f"<label class=\"task-item\"><input type=\"checkbox\" disabled{checked_attr}>"
+                    f"<span>{render_inline(item_text)}</span></label></li>"
+                )
+            items = "".join(rendered_items)
             blocks.append(f"<{list_tag}>{items}</{list_tag}>")
         list_items = []
         list_tag = None
 
-    for raw_line in lines:
+    index = 0
+    while index < len(lines):
+        raw_line = lines[index]
         line = raw_line.strip()
 
         if not line:
             flush_paragraph()
             flush_list()
+            index += 1
+            continue
+
+        if line.startswith(">"):
+            flush_paragraph()
+            flush_list()
+
+            quote_lines: list[str] = []
+            while index < len(lines) and lines[index].lstrip().startswith(">"):
+                quote_lines.append(lines[index])
+                index += 1
+
+            first_quote_line = quote_lines[0].lstrip()
+            callout_match = re.match(r"^>\s*\[!([^\]]+)\][+-]?\s*(.*)$", first_quote_line)
+
+            if callout_match:
+                raw_callout_type = callout_match.group(1).strip()
+                callout_title = callout_match.group(2).strip()
+                inner_markdown = "\n".join(strip_quote_prefix(item) for item in quote_lines[1:]).strip()
+                inner_html = render_markdown(inner_markdown) if inner_markdown else ""
+                callout_type_class = callout_class(raw_callout_type)
+
+                if callout_type_class == "quote" and callout_title and not inner_html:
+                    inner_html = f"<p>{render_inline(callout_title)}</p>"
+                    callout_title = ""
+
+                title_html = (
+                    f"<div class=\"callout-title\">{render_inline(callout_title or default_callout_title(raw_callout_type))}</div>"
+                    if callout_type_class != "quote" or callout_title
+                    else ""
+                )
+
+                blocks.append(
+                    f"<section class=\"callout callout-{callout_type_class}\">"
+                    f"{title_html}<div class=\"callout-content\">{inner_html}</div></section>"
+                )
+                continue
+
+            inner_markdown = "\n".join(strip_quote_prefix(item) for item in quote_lines).strip()
+            inner_html = render_markdown(inner_markdown) if inner_markdown else ""
+            blocks.append(f"<blockquote>{inner_html}</blockquote>")
             continue
 
         if line == "---":
             flush_paragraph()
             flush_list()
             blocks.append("<hr>")
+            index += 1
             continue
 
         if line.startswith("### "):
             flush_paragraph()
             flush_list()
             blocks.append(f"<h3>{render_inline(line[4:])}</h3>")
+            index += 1
             continue
 
         if line.startswith("## "):
             flush_paragraph()
             flush_list()
             blocks.append(f"<h2>{render_inline(line[3:])}</h2>")
+            index += 1
             continue
 
         if line.startswith("# "):
             flush_paragraph()
             flush_list()
             blocks.append(f"<h1>{render_inline(line[2:])}</h1>")
+            index += 1
             continue
 
         ordered_match = re.match(r"^\d+\.\s+(.+)$", line)
+        task_match = re.match(r"^[-*]\s+\[([ xX])\]\s+(.+)$", line)
         unordered_match = re.match(r"^[-*]\s+(.+)$", line)
 
         if ordered_match:
@@ -191,7 +293,17 @@ def render_markdown(body: str) -> str:
             if list_tag not in {None, "ol"}:
                 flush_list()
             list_tag = "ol"
-            list_items.append(ordered_match.group(1))
+            list_items.append((ordered_match.group(1), None))
+            index += 1
+            continue
+
+        if task_match:
+            flush_paragraph()
+            if list_tag not in {None, "ul"}:
+                flush_list()
+            list_tag = "ul"
+            list_items.append((task_match.group(2), task_match.group(1).lower() == "x"))
+            index += 1
             continue
 
         if unordered_match:
@@ -199,11 +311,13 @@ def render_markdown(body: str) -> str:
             if list_tag not in {None, "ul"}:
                 flush_list()
             list_tag = "ul"
-            list_items.append(unordered_match.group(1))
+            list_items.append((unordered_match.group(1), None))
+            index += 1
             continue
 
         flush_list()
         paragraph.append(line)
+        index += 1
 
     flush_paragraph()
     flush_list()
@@ -371,7 +485,7 @@ def build_entry(path: Path) -> DiaryDocument | None:
     date = frontmatter.get("date", path.stem)
     title = frontmatter.get("title", path.stem)
     tag = resolve_tag(frontmatter)
-    summary = frontmatter.get("summary", "") or first_paragraph(body)
+    summary = plain_text_excerpt(frontmatter.get("summary", "") or first_paragraph(body))
     cover_image = resolve_cover_path(path, frontmatter)
 
     if not date or not title or not summary:

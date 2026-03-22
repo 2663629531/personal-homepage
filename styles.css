@@ -483,7 +483,9 @@ main {
 .entry-content ol,
 .entry-content h2,
 .entry-content h3,
-.entry-content hr {
+.entry-content hr,
+.entry-content blockquote,
+.entry-content .callout {
   margin: 0 0 18px;
 }
 
@@ -515,6 +517,94 @@ main {
   background: var(--bg-elevated);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.92em;
+}
+
+.entry-content mark {
+  padding: 0 4px;
+  background: rgba(255, 214, 10, 0.28);
+  color: inherit;
+}
+
+.entry-content blockquote {
+  padding-left: 18px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--text-soft);
+}
+
+.entry-content blockquote > :last-child,
+.callout-content > :last-child {
+  margin-bottom: 0;
+}
+
+.callout {
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+
+.callout-title {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.callout-abstract,
+.callout-note,
+.callout-info,
+.callout-tools,
+.callout-palette,
+.callout-bug,
+.callout-quote {
+  border-left-width: 3px;
+  border-left-style: solid;
+}
+
+.callout-abstract {
+  border-left-color: #11b7c8;
+}
+
+.callout-info {
+  border-left-color: #3177e0;
+}
+
+.callout-tools {
+  border-left-color: #2fb1ff;
+}
+
+.callout-palette {
+  border-left-color: #ff8d3a;
+}
+
+.callout-bug {
+  border-left-color: #ff6961;
+}
+
+.callout-quote {
+  border-left-color: #8c93a8;
+  background: color-mix(in srgb, var(--bg-elevated) 86%, var(--text) 14%);
+}
+
+.callout-quote .callout-title {
+  margin-bottom: 0;
+  font-weight: 500;
+  color: var(--text-soft);
+}
+
+.entry-content .task-list-item {
+  list-style: none;
+}
+
+.entry-content .task-item {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.entry-content .task-item input {
+  margin: 0.35em 0 0;
+  accent-color: var(--text);
 }
 
 .entry-pager {

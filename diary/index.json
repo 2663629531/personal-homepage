@@ -18,6 +18,15 @@
     "coverImage": "./diary/covers/2026-03-22-genesis.jpg"
   },
   {
+    "date": "2026-03-22-genesis-v2",
+    "displayDate": "2026.03.22.genesis.v2",
+    "tag": "Diary",
+    "title": "2026-03-22-genesis-v2",
+    "summary": "[星历 2026-03-22 16:15]",
+    "url": "./diary/posts/2026-03-22-genesis-v2.html",
+    "coverImage": "./diary/covers/2026-03-22-genesis-v2.jpg"
+  },
+  {
     "date": "2026-03-21",
     "displayDate": "2026.03.21",
     "tag": "OpenClaw / 实战复盘",

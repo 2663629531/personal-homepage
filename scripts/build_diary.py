@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parent.parent
 ENTRIES_DIR = ROOT / "diary" / "entries"
 OUTPUT_FILE = ROOT / "diary" / "index.json"
 POSTS_DIR = ROOT / "diary" / "posts"
+COVERS_DIR = ROOT / "diary" / "covers"
+IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif")
 
 
 @dataclass
@@ -21,6 +23,7 @@ class DiaryEntry:
     title: str
     summary: str
     url: str
+    coverImage: str | None = None
 
 
 @dataclass
@@ -57,6 +60,21 @@ def first_paragraph(body: str) -> str:
             continue
         return " ".join(text.splitlines()).strip()
     return ""
+
+
+def resolve_cover_path(slug: str, frontmatter: dict[str, str]) -> str | None:
+    explicit_cover = frontmatter.get("cover", "").strip()
+    if explicit_cover:
+        if explicit_cover.startswith(("http://", "https://", "./", "../")):
+            return explicit_cover
+        return f"./{explicit_cover.removeprefix('./')}"
+
+    for extension in IMAGE_EXTENSIONS:
+        candidate = COVERS_DIR / f"{slug}{extension}"
+        if candidate.exists():
+            return f"./diary/covers/{candidate.name}"
+
+    return None
 
 
 def render_inline(text: str) -> str:
@@ -163,6 +181,22 @@ def render_entry_page(
     previous_href = f"../../{previous_entry.url.removeprefix('./')}" if previous_entry else ""
     next_href = f"../../{next_entry.url.removeprefix('./')}" if next_entry else ""
     latest_href = f"../../{latest_entry.url.removeprefix('./')}" if latest_entry else ""
+    cover_href = (
+        entry.coverImage
+        if entry.coverImage and entry.coverImage.startswith(("http://", "https://"))
+        else f"../../{entry.coverImage.removeprefix('./')}"
+        if entry.coverImage
+        else ""
+    )
+    cover_block = (
+        f"""
+            <figure class="entry-cover">
+              <img src="{cover_href}" alt="{html.escape(entry.title)} 封面图" loading="eager" />
+            </figure>
+        """
+        if cover_href
+        else ""
+    )
     previous_link = (
         f"""
             <a class="entry-pager-card" href="{previous_href}">
@@ -257,6 +291,7 @@ def render_entry_page(
             <a href="../../index.html#diary">返回日记列表</a>
           </div>
           <article class="entry-article reveal is-visible">
+{cover_block}
             <div class="entry-meta">
               <time datetime="{entry.date}">{entry.displayDate}</time>
               <span>{html.escape(entry.tag)}</span>
@@ -283,7 +318,7 @@ def render_entry_page(
       </footer>
     </div>
 
-    <script src="../../script.js?v=20260322-diary-cachefix"></script>
+    <script src="../../script.js?v=20260322-diary-cover"></script>
   </body>
 </html>
 """
@@ -297,6 +332,7 @@ def build_entry(path: Path) -> DiaryDocument | None:
     title = frontmatter.get("title", path.stem)
     tag = frontmatter.get("tag", "Diary")
     summary = frontmatter.get("summary", "") or first_paragraph(body)
+    cover_image = resolve_cover_path(path.stem, frontmatter)
 
     if not date or not title or not summary:
         return None
@@ -312,6 +348,7 @@ def build_entry(path: Path) -> DiaryDocument | None:
             title=title,
             summary=summary,
             url=url,
+            coverImage=cover_image,
         ),
         body=body,
         slug=path.stem,

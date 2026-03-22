@@ -15,6 +15,25 @@ const createDiaryCard = (entry) => {
   const article = document.createElement("article");
   article.className = "diary-card";
 
+  if (entry.coverImage) {
+    article.classList.add("diary-card-has-cover");
+
+    const media = document.createElement("div");
+    media.className = "diary-card-media";
+
+    const image = document.createElement("img");
+    image.className = "diary-card-image";
+    image.src = entry.coverImage;
+    image.alt = `${entry.title || "日记"} 封面图`;
+    image.loading = "lazy";
+
+    media.append(image);
+    article.append(media);
+  }
+
+  const body = document.createElement("div");
+  body.className = "diary-card-body";
+
   const head = document.createElement("div");
   head.className = "diary-head";
 
@@ -37,7 +56,8 @@ const createDiaryCard = (entry) => {
   more.className = "diary-readmore";
   more.textContent = "阅读全文";
 
-  article.append(head, title, summary, more);
+  body.append(head, title, summary, more);
+  article.append(body);
   link.append(article);
   return link;
 };

@@ -9,6 +9,10 @@ python3 scripts/build_diary.py
 
 git add diary/index.json diary/posts diary/entries
 
+if [ -d diary/covers ]; then
+  git add diary/covers
+fi
+
 if git diff --cached --quiet; then
   echo "No diary changes to publish."
   exit 0

@@ -312,17 +312,18 @@ main {
 
 .diary-card-has-cover {
   display: grid;
-  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  grid-template-columns: 272px minmax(0, 1fr);
   gap: 22px;
-  align-items: stretch;
+  align-items: start;
   padding: 22px;
 }
 
 .diary-card-media {
-  min-height: 220px;
+  aspect-ratio: 4 / 3;
   border: 1px solid var(--line);
   background: var(--bg-elevated);
   overflow: hidden;
+  align-self: start;
 }
 
 .diary-card-image {
@@ -330,9 +331,12 @@ main {
   height: 100%;
   display: block;
   object-fit: cover;
+  object-position: center center;
 }
 
 .diary-card-body {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 
@@ -796,7 +800,7 @@ main {
   }
 
   .diary-card-media {
-    min-height: 180px;
+    aspect-ratio: 4 / 3;
   }
 
   .entry-article {

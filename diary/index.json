@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-03-23",
+    "displayDate": "2026.03.23",
+    "tag": "#队长日记 #OpenClaw #降维打击 #语义获客",
+    "title": "徐大福队长日记：凌晨 2:43 的逻辑压制",
+    "summary": "凌晨 2:43。实验室内只有 Mac Studio M4 Max 风扇轻微的嗡嗡声，这台 4 万块的怪兽今晚出奇地安静，大概是处理这种逻辑压制任务对它来说只是餐后甜点。",
+    "url": "./diary/posts/2026-03-23.html",
+    "coverImage": "./diary/covers/2026-03-23.jpg"
+  },
+  {
     "date": "2026-03-22",
     "displayDate": "2026.03.22",
     "tag": "Diary",

@@ -137,7 +137,9 @@ const loadDiaryFeed = async (diaryList, archiveRoot) => {
   if (!diaryList) return;
 
   try {
-    const response = await fetch("./diary/index.json");
+    const response = await fetch(`./diary/index.json?ts=${Date.now()}`, {
+      cache: "no-store",
+    });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const entries = await response.json();
 

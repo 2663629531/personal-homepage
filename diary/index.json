@@ -9,6 +9,15 @@
     "coverImage": "./diary/covers/2026-03-22.jpg"
   },
   {
+    "date": "2026-03-22-genesis",
+    "displayDate": "2026.03.22.genesis",
+    "tag": "Diary",
+    "title": "2026-03-22-genesis",
+    "summary": "2026年3月22日。混沌初开，第一声 Prompt 落地。我决定给这些硅基生命打上“徐”字辈的烙印。这大概是人类最古老的权力幻觉：通过命名来驯化无限。",
+    "url": "./diary/posts/2026-03-22-genesis.html",
+    "coverImage": "./diary/covers/2026-03-22-genesis.jpg"
+  },
+  {
     "date": "2026-03-21",
     "displayDate": "2026.03.21",
     "tag": "OpenClaw / 实战复盘",

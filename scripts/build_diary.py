@@ -62,19 +62,59 @@ def first_paragraph(body: str) -> str:
     return ""
 
 
-def resolve_cover_path(slug: str, frontmatter: dict[str, str]) -> str | None:
+def relative_site_path(path: Path) -> str | None:
+    try:
+        relative_path = path.relative_to(ROOT)
+    except ValueError:
+        return None
+    return f"./{relative_path.as_posix()}"
+
+
+def resolve_cover_path(path: Path, frontmatter: dict[str, str]) -> str | None:
     explicit_cover = frontmatter.get("cover", "").strip()
     if explicit_cover:
-        if explicit_cover.startswith(("http://", "https://", "./", "../")):
+        if explicit_cover.startswith(("http://", "https://")):
             return explicit_cover
-        return f"./{explicit_cover.removeprefix('./')}"
+
+        explicit_path = (path.parent / explicit_cover).resolve()
+        normalized_explicit_path = relative_site_path(explicit_path)
+        if normalized_explicit_path:
+            return normalized_explicit_path
+
+        fallback_path = (ROOT / explicit_cover.removeprefix("./")).resolve()
+        normalized_fallback_path = relative_site_path(fallback_path)
+        if normalized_fallback_path:
+            return normalized_fallback_path
 
     for extension in IMAGE_EXTENSIONS:
-        candidate = COVERS_DIR / f"{slug}{extension}"
+        candidate = COVERS_DIR / f"{path.stem}{extension}"
         if candidate.exists():
-            return f"./diary/covers/{candidate.name}"
+            normalized_candidate = relative_site_path(candidate)
+            if normalized_candidate:
+                return normalized_candidate
 
     return None
+
+
+def resolve_tag(frontmatter: dict[str, str]) -> str:
+    direct_tag = frontmatter.get("tag", "").strip()
+    if direct_tag:
+        return direct_tag
+
+    raw_tags = frontmatter.get("tags", "").strip()
+    if raw_tags.startswith("[") and raw_tags.endswith("]"):
+        items = [
+            item.strip().strip("'\"")
+            for item in raw_tags[1:-1].split(",")
+            if item.strip()
+        ]
+        if items:
+            return " / ".join(items[:3])
+
+    if raw_tags:
+        return raw_tags
+
+    return "Diary"
 
 
 def render_inline(text: str) -> str:
@@ -330,9 +370,9 @@ def build_entry(path: Path) -> DiaryDocument | None:
 
     date = frontmatter.get("date", path.stem)
     title = frontmatter.get("title", path.stem)
-    tag = frontmatter.get("tag", "Diary")
+    tag = resolve_tag(frontmatter)
     summary = frontmatter.get("summary", "") or first_paragraph(body)
-    cover_image = resolve_cover_path(path.stem, frontmatter)
+    cover_image = resolve_cover_path(path, frontmatter)
 
     if not date or not title or not summary:
         return None
